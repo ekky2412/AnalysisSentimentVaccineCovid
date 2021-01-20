@@ -27,7 +27,8 @@ ui <- fluidPage(
                     tabPanel("Data Twitter", DT::dataTableOutput('dataTwitter')),
                     tabPanel("Data Cleaned", DT::dataTableOutput('dataCleaned')),
                     tabPanel("Data Sentimen", DT::dataTableOutput('tbl')),
-                    tabPanel("Plot Tweet", plotOutput("sent2"))
+                    tabPanel("Plot Emotion Analysis", plotOutput("sent1")),
+                    tabPanel("Plot Popularity Tweets", plotOutput("sent2"))
                 )
             )
 )
