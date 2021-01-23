@@ -25,33 +25,34 @@ ui <- fluidPage(
             mainPanel(
                 tabsetPanel(
                     tabPanel("Data Twitter", DT::dataTableOutput('dataTwitter')),
-                    tabPanel("Data Cleaned", DT::dataTableOutput('dataCleaned')),
+                    tabPanel("Data Bersih", DT::dataTableOutput('dataCleaned')),
                     tabPanel("Data Sentimen", DT::dataTableOutput('tbl')),
-                    tabPanel("Plot Emotion Analysis", plotOutput("sent1")),
-                    tabPanel("Plot Popularity Tweets", plotOutput("sent2"))
+                    tabPanel("Plot Emotion Analysis", plotOutput("plot1")),
+                    tabPanel("Plot Polarity Tweet", plotOutput("plot2"))
                 )
             )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-    dataTwitter<- vroom(here("D://Kuliah//SEMESTER 5//Data Science/Proyek//dataTwitter.csv"))
+    pathOutput = "D:\\KULIAH\\Data Science\\Praktikum\\Project\\"
+    dataTwitter<- read.csv(paste(pathOutput,'dataTwitter.csv',sep = ''))
     dataTwitter<- data.frame(dataTwitter)
     # Output Data
     output$dataTwitter = DT::renderDataTable({
       DT::datatable(dataTwitter, options = list(lengthChange = FALSE))
     })
     
-    sent_df<- vroom(here("D://Kuliah//SEMESTER 5//Data Science/Proyek//dataSentimen.csv"))
+    sent_df<- read.csv(paste(pathOutput,'dataSentimen.csv',sep = ''))
     sent_df <- data.frame(sent_df)
-    dataCleaned<- vroom(here("D://Kuliah//SEMESTER 5//Data Science/Proyek//dataCleaned.csv"))
+    dataCleaned<- read.csv(paste(pathOutput,'dataCleaned.csv',sep = ''))
     dataCleaned<- data.frame(dataCleaned)
     # Output Data
     output$dataCleaned = DT::renderDataTable({
       DT::datatable(dataCleaned, options = list(lengthChange = FALSE))
     })
   
-    sent_df<- vroom(here("D://Kuliah//SEMESTER 5//Data Science/Proyek//dataSentimen.csv"))
+    sent_df<- read.csv(paste(pathOutput,'dataSentimen.csv',sep = ''))
     sent_df <- data.frame(sent_df)
     # Output Data
     output$tbl = DT::renderDataTable({
@@ -77,7 +78,7 @@ server <- function(input, output) {
         xlab("Emotion Categories")
     }
     #plotting tweets emotions
-    output$sent1 <- renderPlot({
+    output$plot1 <- renderPlot({
       plotSentiments1(sent_df, "Sentiment Analysis of Vaccine Covid-19")
     })
     
@@ -100,10 +101,9 @@ server <- function(input, output) {
         xlab("Polarity Categories")
     }
     
-    output$sent2 <- renderPlot({
+    output$plot2 <- renderPlot({
       plotSentiments2(sent_df, "Sentiment Analysis of Vaccine Covid-19")
     })
-    
     
 }
 
