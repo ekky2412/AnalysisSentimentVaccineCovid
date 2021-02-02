@@ -11,6 +11,7 @@ library(ggplot2)
 library(RColorBrewer)
 library(sentiment)
 
+
 consumer_key = "KKWw2ERsKER8njU5SiohACat7";
 consumer_secret = "GRFzLOd0v0lEB12hQ3UHngxHT11PdIYa0mn8t14PqmhRQpQNtc";
 bearer_token = "AAAAAAAAAAAAAAAAAAAAANsjKAEAAAAA11ksFen0WsuiW3orxPBJGd1siVc%3Drr2QbmUjl9ynmxEfTWY5U0UlCOY4cF0mgM28L1U2IRFmLdPzDN";
@@ -28,11 +29,16 @@ str(miningtweets_text);
 
 
 miningtweets_text = read.csv(paste(pathOutput,'dataTwitter.csv',sep = ''))
+miningtweets_text = gsub("https.*"," ", miningtweets_text$x)
+miningtweets_text = gsub("&amp", " ", miningtweets_text)
+miningtweets_text = gsub("\n", " ", miningtweets_text)
+miningtweets_text = sub("^\\s*<U\\+\\w+>\\s*", "", miningtweets_text)
 # remove retweet entities
 miningtweets_text = gsub("(RT|via)((?:\\b\\W*@\\w+)+)", " ", miningtweets_text)
 # remove at people
 miningtweets_text = gsub("@\\w+", " ", miningtweets_text)
 # remove punctuation
+miningtweets_text = gsub("[^\x01-\x7F]", " ", miningtweets_text)
 miningtweets_text = gsub("[[:punct:]]", " ", miningtweets_text)
 # remove numbers
 miningtweets_text = gsub("[[:digit:]]", " ", miningtweets_text)
@@ -42,9 +48,9 @@ miningtweets_text = gsub("http\\w+", " ", miningtweets_text)
 miningtweets_text = gsub("[ \t]{2,}", " ", miningtweets_text)
 miningtweets_text = gsub("^\\s+|\\s+$", " ", miningtweets_text)
 miningtweets_text = gsub("note", " ", miningtweets_text)
-miningtweets_text = gsub("\n", " ", miningtweets_text)
-miningtweets_text = gsub("[^\x01-\x7F]", " ", miningtweets_text)
-miningtweets_text = gsub("&amp", " ", miningtweets_text)
+
+
+
 
 # define "tolower error handling" function 
 try.error = function(x)
@@ -87,7 +93,7 @@ sent_df = data.frame(text=miningtweets_text, emotion=emotion,
 # sort data frame
 sent_df = within(sent_df,
                  emotion <- factor(emotion, levels=names(sort(table(emotion), decreasing=TRUE))))
-write.csv(sent_df, paste(pathOutput,'dataSentimen.csv',sep = ''))
+write.csv(sent_df, paste(pathOutput,'dataSentimen2.csv',sep = ''))
 View(sent_df)
 head(sent_df,20)
 table(sent_df$emotion)
@@ -119,7 +125,7 @@ ggplot(sent_df, aes(x=polarity)) +
   geom_bar(aes(y=..count.., fill=polarity)) +
   scale_fill_brewer(palette="RdGy") +
   labs(x="polarity categories", y="number of tweets") +
-  labs(title = "Sentiment Analysis dari Vaksin COVID-19",
+  labs(title = "Sentiment Analysis of Vaccine COVID-19",
        plot.title = element_text(size=12))
 plotSentiments2 <- function(sent_df, title)
 {
