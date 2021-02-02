@@ -93,7 +93,7 @@ sent_df = data.frame(text=miningtweets_text, emotion=emotion,
 # sort data frame
 sent_df = within(sent_df,
                  emotion <- factor(emotion, levels=names(sort(table(emotion), decreasing=TRUE))))
-write.csv(sent_df, paste(pathOutput,'dataSentimen2.csv',sep = ''))
+write.csv(sent_df, paste(pathOutput,'dataSentimen.csv',sep = ''))
 View(sent_df)
 head(sent_df,20)
 table(sent_df$emotion)
