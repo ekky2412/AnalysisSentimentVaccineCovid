@@ -1,18 +1,14 @@
 library(twitteR)
 library(RCurl)
 library(wordcloud)
-library(corpus)
 library(tm)
 library(SnowballC)
 library(Rstem)
-library(twitteR)
-library(tm)
 library(NLP)
 library(SentimentAnalysis)
 library(plyr)
 library(ggplot2)
 library(RColorBrewer)
-library(wordcloud)
 library(sentiment)
 
 consumer_key = "KKWw2ERsKER8njU5SiohACat7";
@@ -25,12 +21,13 @@ setup_twitter_oauth(consumer_key,consumer_secret,access_token,access_secret);
 #mining data twitter
 miningtweets <- searchTwitter('Vaccine COVID',lang="en",n=2000, resultType = "mixed");
 miningtweets_text <- sapply(miningtweets,function(x) x$getText());
-write.csv(miningtweets_text, paste('D:\\Kuliah\\SEMESTER 5\\Data Science\\Proyek\\','dataTwitter.csv',sep = ''))
+#Tempat penyimpanan file csv
+pathOutput = "D:\\KULIAH\\Data Science\\Praktikum\\Project\\"
+write.csv(miningtweets_text, paste(pathOutput,'dataTwitter.csv',sep = ''))
 str(miningtweets_text);
 
-#BB_corpus = Corpus(VectorSource(miningtweets_text))
-#inspect(BB_corpus)
 
+miningtweets_text = read.csv(paste(pathOutput,'dataTwitter.csv',sep = ''))
 # remove retweet entities
 miningtweets_text = gsub("(RT|via)((?:\\b\\W*@\\w+)+)", " ", miningtweets_text)
 # remove at people
@@ -47,7 +44,7 @@ miningtweets_text = gsub("^\\s+|\\s+$", " ", miningtweets_text)
 miningtweets_text = gsub("note", " ", miningtweets_text)
 miningtweets_text = gsub("\n", " ", miningtweets_text)
 miningtweets_text = gsub("[^\x01-\x7F]", " ", miningtweets_text)
-miningtweets_text = gsub("amp", " ", miningtweets_text)
+miningtweets_text = gsub("&amp", " ", miningtweets_text)
 
 # define "tolower error handling" function 
 try.error = function(x)
@@ -69,10 +66,11 @@ miningtweets_text = sapply(miningtweets_text, try.error)
 miningtweets_text = miningtweets_text[!is.na(miningtweets_text)]
 names(miningtweets_text) = NULL
 
-write.csv(miningtweets_text, paste('D:\\Kuliah\\SEMESTER 5\\Data Science\\Proyek\\','dataCleaned.csv',sep = ''))
+write.csv(miningtweets_text, paste(pathOutput,'dataCleaned.csv',sep = ''))
 
+miningtweets_text = read.csv(paste(pathOutput,'dataCleaned.csv',sep = ''))
 # classify emotion
-class_emo = classify_emotion(miningtweets_text, algorithm="bayes", prior=1.0)
+class_emo = classify_emotion(miningtweets_text, algorithm="bayes", prior=1.0, verbose = TRUE)
 # get emotion best fit
 emotion = class_emo[,7]
 # substitute NA's by "unknown"
@@ -89,7 +87,7 @@ sent_df = data.frame(text=miningtweets_text, emotion=emotion,
 # sort data frame
 sent_df = within(sent_df,
                  emotion <- factor(emotion, levels=names(sort(table(emotion), decreasing=TRUE))))
-write.csv(sent_df, paste('D:\\Kuliah\\SEMESTER 5\\Data Science\\Proyek\\','dataSentimen.csv',sep = ''))
+write.csv(sent_df, paste(pathOutput,'dataSentimen.csv',sep = ''))
 View(sent_df)
 head(sent_df,20)
 table(sent_df$emotion)
